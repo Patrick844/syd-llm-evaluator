@@ -1,4 +1,4 @@
-# SYDS Evaluator
+# SYD LLM Evaluator
 
 A lightweight evaluation pipeline for preventive-health assistant responses.
 
