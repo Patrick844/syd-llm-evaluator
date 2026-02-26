@@ -10,7 +10,7 @@ This project includes:
 
 ## Project Status
 
-This repository is currently a **POC (Proof of Concept)** focused on validating evaluation logic and end-to-end workflow.
+This repository is currently a **POC (Proof of Concept)** focused on validating agent responses and end-to-end workflow.
 
 ---
 
