@@ -1,0 +1,27 @@
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app:app --host 0.0.0.0 --port 8000
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      KB_PATH: ${KB_PATH:-/app/data/knowledge_base.json}
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: streamlit run streamlit/streamlit.py --server.address 0.0.0.0 --server.port 8501
+    environment:
+      API_URL: ${API_URL:-http://fastapi:8000/evaluate}
+    depends_on:
+      - fastapi
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app

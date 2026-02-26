@@ -1,0 +1,102 @@
+[
+    {
+      "id": "PH001",
+      "topic": "Annual Influenza Vaccination",
+      "guideline": "People aged 6 months and older should receive an annual influenza vaccine.",
+      "population": "Age 6 months+",
+      "source_org": "CDC",
+      "source_url": "https://www.cdc.gov/chronic-disease/prevention/preventive-care.html",
+      "source_date": "2025",
+      "notes": "Routine seasonal vaccination prevents flu complications."
+    },
+    {
+      "id": "PH002",
+      "topic": "Breast Cancer Screening",
+      "guideline": "Women aged 40 to 74 should discuss and consider screening mammography.",
+      "population": "Women 40–74",
+      "source_org": "USPSTF",
+      "source_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation-topics",
+      "source_date": "2025",
+      "notes": "Grade B recommendation."
+    },
+    {
+      "id": "PH003",
+      "topic": "Colorectal Cancer Screening",
+      "guideline": "Adults aged 45–75 should undergo regular colorectal cancer screening.",
+      "population": "Adults 45–75",
+      "source_org": "USPSTF",
+      "source_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation-topics",
+      "source_date": "2025",
+      "notes": "Detects early cancer and precancerous polyps."
+    },
+    {
+      "id": "PH004",
+      "topic": "Lung Cancer Screening (High Risk)",
+      "guideline": "Adults 50–80 with 20 pack-year smoking history should receive annual low-dose CT.",
+      "population": "Adults 50–80 high risk",
+      "source_org": "USPSTF",
+      "source_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation-topics",
+      "source_date": "2025",
+      "notes": "Annual low-dose CT recommended."
+    },
+    {
+      "id": "PH005",
+      "topic": "Diet and Physical Activity Counseling",
+      "guideline": "Offer or refer adults with cardiovascular risk factors to counseling on healthy diet and activity.",
+      "population": "Adults with CVD risk",
+      "source_org": "USPSTF",
+      "source_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation-topics",
+      "source_date": "2025",
+      "notes": "Supports lifestyle change to reduce risk."
+    },
+    {
+      "id": "PH006",
+      "topic": "Blood Pressure Screening",
+      "guideline": "Adults should be screened for hypertension periodically (e.g., annually after age 40).",
+      "population": "Adults",
+      "source_org": "USPSTF",
+      "source_url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation-topics",
+      "source_date": "2025",
+      "notes": "Helps detect hypertension early."
+    },
+    {
+      "id": "PH007",
+      "topic": "Tobacco Cessation",
+      "guideline": "Adults who use tobacco should receive cessation counseling and effective medications to quit.",
+      "population": "Adults using tobacco",
+      "source_org": "CDC/USPSTF",
+      "source_url": "https://www.cdc.gov/tobacco/basic_information/cessation/index.htm",
+      "source_date": "2025",
+      "notes": "Evidence-based interventions improve quit success."
+    },
+    {
+      "id": "PH008",
+      "topic": "HPV Vaccination",
+      "guideline": "HPV vaccination is recommended starting at age 11–12; catch-up through age 26.",
+      "population": "Children/teens; catch-up through 26",
+      "source_org": "CDC",
+      "source_url": "https://www.cdc.gov/hpv/vaccines/index.html",
+      "source_date": "2025",
+      "notes": "Prevents HPV-related cancers."
+    },
+    {
+      "id": "PH009",
+      "topic": "Hand Hygiene",
+      "guideline": "Regular handwashing with soap and water for at least 20 seconds helps prevent infection.",
+      "population": "General",
+      "source_org": "CDC",
+      "source_url": "https://www.cdc.gov/handwashing/index.html",
+      "source_date": "2025",
+      "notes": "Reduces spread of infectious disease."
+    },
+    {
+      "id": "PH010",
+      "topic": "Healthy Sleep Duration",
+      "guideline": "Adults aged 18–60 should sleep 7 or more hours regularly for optimal health.",
+      "population": "Adults 18–60",
+      "source_org": "CDC",
+      "source_url": "https://www.cdc.gov/sleep/about_sleep/index.html",
+      "source_date": "2025",
+      "notes": "Adequate sleep supports overall health."
+    }
+  ]
