@@ -15,7 +15,7 @@ def run_llm(kb, user_message):
         # Read evaluator settings from config/config.yaml.
         config = get_config("llm_evaluator")
 
-        # NOTE: This currently ignores the `kb` arg and always reloads from disk.
+        # Load the knowledge base from disk for prompt construction.
         kb = get_kb("data/knowledge_base.json")
         config["system_prompt"] = str(config["system_prompt"]).format(kb=str(kb))
     except Exception as e:

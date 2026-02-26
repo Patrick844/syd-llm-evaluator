@@ -6,7 +6,7 @@ from openai import OpenAI
 dotenv.load_dotenv()
 
 # Base URL for custom OpenAI-compatible endpoint.
-# NOTE: Empty env key means this is usually None.
+# Uses an empty environment variable key and typically resolves to None.
 url= os.getenv("")
 
 # Standard OpenAI API key from environment.

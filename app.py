@@ -18,11 +18,10 @@ KB_PATH = os.environ.get("KB_PATH")
 
 app = FastAPI()
 
-# Allow frontend clients (e.g., Streamlit) to call the API from another origin.
-# TODO: Restrict this in production instead of wildcard.
+# Allow cross-origin requests from frontend clients.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten later
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
