@@ -257,14 +257,6 @@ Recommended structure per item:
 }
 ```
 
-
-### Data quality tips
-
-- Keep language consistent across KB entries
-- Prefer atomic entries (one guideline per object)
-- Version your KB when making major updates
-- Validate JSON format before upload/use
-
 ---
 
 ## Configuration
@@ -312,7 +304,7 @@ docker compose up --build
 This project is a **POC (Proof of Concept)** and is intentionally simple for fast iteration.
 
 To improve **accuracy**, **efficiency**, and **production readiness**, the next steps are:
-- Implement a **RAG** pipeline (retrieval + context selection) to ground evaluations more reliably.
+- Implement a **RAG** pipeline (retrieval + re-ranking) to ground evaluations more reliably.
 - Add a **database** to store evaluation requests/results for logging, analytics, and auditability.
 - Deploy to **cloud infrastructure** for scalable API/UI hosting.
 - Use **cloud storage** for datasets, knowledge-base versions, and exported results.
