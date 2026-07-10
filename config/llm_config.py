@@ -1,30 +1,32 @@
 import dotenv
+import logging
 import os
 from openai import OpenAI
 
 # Load .env variables at import time.
 dotenv.load_dotenv()
 
-# Base URL for custom OpenAI-compatible endpoint.
-# Uses an empty environment variable key and typically resolves to None.
-url= os.getenv("")
+logger = logging.getLogger(__name__)
+
+# Optional base URL for custom OpenAI-compatible endpoints (e.g. Azure, local proxy).
+url = os.getenv("OPENAI_BASE_URL")
 
 # Standard OpenAI API key from environment.
 api_key = os.getenv("OPENAI_API_KEY")
 
 
 class LLM_OPENAI:
-    def __init__(self,config):
+    def __init__(self, config):
         # Store runtime model/prompt/response settings.
         self.config = config
 
         # Initialize OpenAI client once per service instance.
         self.client = OpenAI(
-        base_url=url,
-        api_key=api_key,
+            base_url=url,
+            api_key=api_key,
         )
 
-    def invoke(self,user_message, response_template=None):
+    def invoke(self, user_message, response_template=None):
         """
         Send prompt to model and return either:
         - parsed structured output (when response_type == structured_output), or
@@ -37,48 +39,39 @@ class LLM_OPENAI:
         except KeyError as e:
             raise ValueError(f"Missing required LLM config key: {e}") from e
 
-        print("Response Type: ",response_type)
+        logger.debug("Response type: %s", response_type)
 
-        if response_type=="structured_output":
+        if response_type == "structured_output":
             # Convert prompts into role-based messages for Responses API.
-            user_message = {"role": "user", "content": user_message}
-            system_prompt = {"role": "system", "content": system_prompt}
+            user_msg = {"role": "user", "content": user_message}
+            sys_msg = {"role": "system", "content": system_prompt}
             try:
                 completion = self.client.responses.parse(
-                model=model_name,
-                max_output_tokens=4096,
-                input = [
-                    system_prompt,
-                    user_message
-                ],
-                text_format=response_template
+                    model=model_name,
+                    max_output_tokens=4096,
+                    input=[sys_msg, user_msg],
+                    text_format=response_template,
                 )
             except Exception as e:
                 raise RuntimeError(f"Structured LLM request failed: {e}") from e
-            print(completion)
 
             # Parsed object follows the provided pydantic schema.
             response = completion.output_parsed
-
-            print("Generate Response\n")
-            print("\nUser Message: ",user_message)
-            print("AI Assistant: ", response)
+            logger.debug("LLM response: %s", response)
             return response
 
         else:
             # Fallback plain chat-completions path.
             try:
                 response = self.client.chat.completions.create(
-            model=model_name,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0
-            )
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_message},
+                    ],
+                    temperature=0,
+                )
             except Exception as e:
                 raise RuntimeError(f"Chat completion request failed: {e}") from e
-            print("Generate Response\n")
-            print("\nUser Message: ",user_message)
-            print("AI Assistant: ", response)
+            logger.debug("LLM response: %s", response)
             return response.choices[0].message.content.strip(), response

@@ -1,8 +1,6 @@
-import json
-from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from schemas.fast_api_templates import *
+from schemas.fast_api_templates import EvaluateRequest, EvaluateResponse
 from dotenv import load_dotenv
 from utils import get_kb
 from ai_services.ai_service import run_llm
@@ -42,7 +40,7 @@ def health():
     return {"status": "ok", "kb_items": len(KNOWLEDGE_BASE)}
 
 
-@app.post("/evaluate")
+@app.post("/evaluate", response_model=dict)
 def evaluate(req: EvaluateRequest):
     # Fail fast if startup KB load failed.
     if not KNOWLEDGE_BASE:
@@ -53,27 +51,20 @@ def evaluate(req: EvaluateRequest):
     # Evaluate each submitted turn and normalize output for the frontend table.
     for idx, turn in enumerate(req.turns):
         try:
-            response = dict(run_llm(KNOWLEDGE_BASE, str(turn)))
+            evaluation = run_llm(KNOWLEDGE_BASE, str(turn))
         except Exception as e:
             raise HTTPException(
                 status_code=502,
                 detail=f"LLM evaluation failed for turn index {idx}: {e}",
             ) from e
 
-        try:
-            # Echo selected source fields for easy comparison in the dashboard output.
-            response["user_message"] = turn[0]["content"]
-            response["agent"] = turn[1]["content"]
-        except (TypeError, IndexError, KeyError) as e:
-            raise HTTPException(
-                status_code=422,
-                detail=(
-                    f"Invalid turn format at index {idx}. "
-                    "Expected a list with user and assistant message objects."
-                ),
-            ) from e
-
-        final_result.append(response)
+        # Echo source fields for easy comparison in the dashboard output.
+        result = EvaluateResponse(
+            **dict(evaluation),
+            user_message=turn[0].content,
+            agent=turn[1].content,
+        )
+        final_result.append(result.model_dump())
 
     # Return list under a stable envelope key for UI compatibility.
     return {"results": final_result}
