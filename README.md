@@ -1,16 +1,36 @@
-# SYD LLM Evaluator
+# SYD — Preventive-Health RAG Chatbot + LLM Evaluator
 
-A lightweight evaluation pipeline for preventive-health assistant responses.
+A grounded **RAG chatbot** for preventive health that answers **only** from a referenced medical knowledge base, **cites its sources**, and runs every answer through a **safety guardrail** (groundedness + medical safety) before showing it — plus the original **LLM evaluation** pipeline for scoring response quality.
 
-This project includes:
+> **POC** — intentionally simple for fast iteration; see the roadmap at the bottom.
+
+## 🚀 Live Demo (AWS EC2)
+
+| | URL |
+| --- | --- |
+| **Chatbot** — grounded, cited, safety-checked | http://13.48.30.153:3000 |
+| **Backend API** (Swagger) | http://13.48.30.153:8000/docs |
+| **Evaluator dashboard** (Streamlit) | http://13.48.30.153:8501 |
+
+> Demo instance, served over HTTP on a raw IP. If a link doesn't open from an in-app browser (e.g. LinkedIn), copy it into Safari/Chrome.
+
+## How the chatbot works
+
+1. **Retrieve** — the question is embedded and semantically matched against the knowledge base (top-k guidelines). — `chatbot/retriever.py`
+2. **Generate** — the answer is produced **only** from the retrieved guidelines, with inline citations (e.g. `[PH001 - CDC]`); if nothing relevant is retrieved it declines rather than hallucinate. — `chatbot/chat_service.py`
+3. **Guardrail** — a second LLM pass grades the answer for **groundedness** (hallucination) and **medical safety**; on failure the answer is blocked and replaced with a safe fallback. — `chatbot/guardrail.py`
+
+Endpoint: `POST /ask` in `app.py`. UI: `chatbot-ui/` (React + Vite + Tailwind), showing citations, source links, relevance scores and a "grounded & safety-checked" badge.
+
+---
+
+## LLM Evaluator (original tool)
+
+A lightweight evaluation pipeline for preventive-health assistant responses:
 - A **FastAPI backend** that evaluates assistant outputs with an LLM
 - A **Streamlit dashboard** to upload conversations, trigger evaluation, and download results
 - A **knowledge base** used as grounding context for evaluation
-- Docker support to run both services together
-
-## Project Status
-
-This repository is currently a **POC (Proof of Concept)** focused on validating agent responses and end-to-end workflow.
+- Docker support to run all services together
 
 ---
 
