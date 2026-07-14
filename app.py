@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from schemas.fast_api_templates import EvaluateRequest, EvaluateResponse
+from schemas.chat_templates import AskRequest, AskResponse
 from dotenv import load_dotenv
 from utils import get_kb
 from ai_services.ai_service import run_llm
+from chatbot.retriever import KBRetriever
+from chatbot.chat_service import answer_question
 import os
 
 # Load environment variables from .env at startup.
@@ -33,11 +36,38 @@ except Exception as e:
     KNOWLEDGE_BASE = []
     print(f"[WARN] KB not loaded: {e}")
 
+# Build the retriever once at startup (embeds the KB). Needs the OpenAI key;
+# if it fails the chat endpoint returns 503 but /evaluate still works.
+try:
+    RETRIEVER = KBRetriever(KNOWLEDGE_BASE)
+    print(f"[INFO] Retriever ready — {len(KNOWLEDGE_BASE)} KB entries embedded")
+except Exception as e:
+    RETRIEVER = None
+    print(f"[WARN] Retriever not built: {e}")
+
 
 @app.get("/health")
 def health():
     # Simple readiness endpoint for monitoring and quick smoke checks.
-    return {"status": "ok", "kb_items": len(KNOWLEDGE_BASE)}
+    return {"status": "ok", "kb_items": len(KNOWLEDGE_BASE), "chat_ready": RETRIEVER is not None}
+
+
+@app.post("/ask", response_model=AskResponse)
+def ask(req: AskRequest):
+    # RAG chat: retrieve grounding guidelines, then answer citing them.
+    if RETRIEVER is None:
+        raise HTTPException(status_code=503, detail="Chat is unavailable (retriever not initialised).")
+    if not req.question.strip():
+        raise HTTPException(status_code=400, detail="Question must not be empty.")
+    try:
+        result = answer_question(
+            RETRIEVER,
+            req.question,
+            history=[turn.model_dump() for turn in req.history],
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Chat generation failed: {e}") from e
+    return AskResponse(**result)
 
 
 @app.post("/evaluate", response_model=dict)

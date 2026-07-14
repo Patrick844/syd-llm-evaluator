@@ -1,27 +1,37 @@
 services:
-  fastapi:
+  # FastAPI backend: RAG chatbot (/ask) + evaluation (/evaluate)
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
     command: uvicorn app:app --host 0.0.0.0 --port 8000
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      KB_PATH: ${KB_PATH:-/app/data/knowledge_base.json}
+      KB_PATH: /app/data/knowledge_base.json
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
 
-  streamlit:
+  # React chatbot UI (served by nginx). Backend URL baked in at build time.
+  chatbot:
+    build:
+      context: ./chatbot-ui
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8000}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  # Streamlit evaluation dashboard (the original response-quality tool)
+  evaluator:
     build:
       context: .
       dockerfile: Dockerfile
     command: streamlit run streamlit/streamlit.py --server.address 0.0.0.0 --server.port 8501
     environment:
-      API_URL: ${API_URL:-http://fastapi:8000/evaluate}
+      API_URL: http://backend:8000/evaluate
     depends_on:
-      - fastapi
+      - backend
     ports:
       - "8501:8501"
-    volumes:
-      - .:/app
