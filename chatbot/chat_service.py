@@ -106,6 +106,7 @@ def answer_question(
         {
             "id": e.get("id"),
             "topic": e.get("topic"),
+            "guideline": e.get("guideline"),
             "source_org": e.get("source_org"),
             "source_url": e.get("source_url"),
             "score": e.get("score"),

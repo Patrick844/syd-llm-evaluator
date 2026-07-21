@@ -4,10 +4,14 @@ import type { ChatMessage } from "./types";
 import Message from "./components/Message";
 import { track } from "./analytics";
 
+// Phrased to map onto real knowledge-base entries so the demo returns a good match:
+// flu → PH001, sleep → PH010, blood pressure → PH006, colorectal → PH003, tobacco → PH007.
 const EXAMPLES = [
-  "Do adults need a yearly flu vaccine?",
+  "Do I need a flu shot?",
   "How much sleep do adults need?",
   "Who should get their blood pressure checked?",
+  "When should I start colorectal cancer screening?",
+  "How can I quit smoking?",
 ];
 
 function Dots() {
@@ -70,15 +74,26 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-dvh flex flex-col bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg">
             ⚕️
           </div>
           <div>
-            <h1 className="font-semibold text-slate-900 leading-tight">Preventive Health Assistant</h1>
+            <h1 className="font-semibold text-slate-900 leading-tight">SYD — Preventive Health Assistant</h1>
             <p className="text-xs text-slate-500">Answers grounded in referenced guidelines — with sources</p>
+          </div>
+        </div>
+        <div className="border-t border-amber-100 bg-amber-50">
+          <div className="mx-auto max-w-3xl px-4 py-2 flex items-start gap-2 text-[11px] leading-snug text-amber-800">
+            <span aria-hidden className="mt-px">ⓘ</span>
+            <p>
+              <span className="font-semibold">Grounded in trusted sources.</span>{" "}
+              SYD answers from CDC/USPSTF preventive-health guidance and cites every source. The
+              knowledge base is actively expanding, so coverage keeps growing. Informational only
+              — not medical advice.
+            </p>
           </div>
         </div>
       </header>
@@ -96,22 +111,15 @@ export default function App() {
                 says so rather than guess.
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-2 max-w-lg">
-              {EXAMPLES.map((ex) => (
-                <button
-                  key={ex}
-                  onClick={() => submit(ex)}
-                  className="text-sm border border-slate-200 bg-white rounded-full px-4 py-2 text-slate-600 hover:border-emerald-400 hover:text-emerald-700 transition-colors"
-                >
-                  {ex}
-                </button>
-              ))}
-            </div>
           </div>
         ) : (
-          <div className="flex-1 space-y-3">
+          <div className="flex-1 space-y-3 pb-24">
             {messages.map((m, i) => (
-              <Message key={i} message={m} />
+              <Message
+                key={i}
+                message={m}
+                question={m.role === "assistant" ? messages[i - 1]?.content : undefined}
+              />
             ))}
             {loading && (
               <div className="flex justify-start">
@@ -120,34 +128,51 @@ export default function App() {
                 </div>
               </div>
             )}
-            <div ref={bottomRef} />
+            <div ref={bottomRef} className="scroll-mb-24" />
           </div>
         )}
 
         {error && <p className="text-sm text-red-600 mt-3">{error}</p>}
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit(input);
-          }}
-          className="mt-4 flex gap-2 sticky bottom-4"
-        >
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={loading}
-            placeholder="Ask about vaccines, screenings, healthy habits…"
-            className="flex-1 border border-slate-300 rounded-xl px-4 py-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
-          />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="bg-emerald-600 text-white font-semibold rounded-xl px-5 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        {/* Input area — suggested questions sit directly above the textbox and
+            stay there (sticky), so they're always one tap away as you type. */}
+        <div className="mt-4 sticky bottom-0 bg-slate-50 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="mb-2 flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {EXAMPLES.map((ex) => (
+              <button
+                key={ex}
+                type="button"
+                onClick={() => submit(ex)}
+                disabled={loading}
+                className="shrink-0 whitespace-nowrap text-sm border border-slate-200 bg-white rounded-full px-3.5 py-2 min-h-[40px] inline-flex items-center text-slate-600 hover:border-emerald-400 hover:text-emerald-700 disabled:opacity-40 transition-colors"
+              >
+                {ex}
+              </button>
+            ))}
+          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit(input);
+            }}
+            className="flex gap-2"
           >
-            Send
-          </button>
-        </form>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              disabled={loading}
+              placeholder="Ask about vaccines, screenings, healthy habits…"
+              className="flex-1 border border-slate-300 rounded-xl px-4 py-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            />
+            <button
+              type="submit"
+              disabled={loading || !input.trim()}
+              className="bg-emerald-600 text-white font-semibold rounded-xl px-5 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Send
+            </button>
+          </form>
+        </div>
 
         <p className="text-[11px] text-slate-400 text-center mt-3">
           Informational only, grounded in referenced guidelines — not a substitute for professional medical advice.

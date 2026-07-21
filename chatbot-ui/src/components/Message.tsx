@@ -27,12 +27,18 @@ function render(text: string): ReactNode[] {
   return parts;
 }
 
-export default function Message({ message }: { message: ChatMessage }) {
+export default function Message({
+  message,
+  question,
+}: {
+  message: ChatMessage;
+  question?: string;
+}) {
   const isUser = message.role === "user";
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
+        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
           isUser ? "bg-emerald-600 text-white" : "bg-white border border-slate-200 text-slate-800"
         }`}
       >
@@ -50,7 +56,7 @@ export default function Message({ message }: { message: ChatMessage }) {
             )}
           </div>
         )}
-        {!isUser && message.sources && <Sources sources={message.sources} />}
+        {!isUser && message.sources && <Sources sources={message.sources} question={question} />}
       </div>
     </div>
   );

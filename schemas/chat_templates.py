@@ -16,6 +16,7 @@ class AskRequest(BaseModel):
 class Source(BaseModel):
     id: Optional[str] = None
     topic: Optional[str] = None
+    guideline: Optional[str] = None
     source_org: Optional[str] = None
     source_url: Optional[str] = None
     score: Optional[float] = None

@@ -9,7 +9,7 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       KB_PATH: /app/data/knowledge_base.json
     ports:
-      - "8000:8000"
+      - "8100:8000"
 
   # React chatbot UI (served by nginx). Backend URL baked in at build time.
   chatbot:
@@ -21,7 +21,7 @@ services:
         VITE_POSTHOG_KEY: ${VITE_POSTHOG_KEY:-}
         VITE_POSTHOG_HOST: ${VITE_POSTHOG_HOST:-https://eu.i.posthog.com}
     ports:
-      - "3000:80"
+      - "3100:80"
     depends_on:
       - backend
 
@@ -36,4 +36,4 @@ services:
     depends_on:
       - backend
     ports:
-      - "8501:8501"
+      - "8601:8501"

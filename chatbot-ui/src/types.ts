@@ -1,6 +1,7 @@
 export interface Source {
   id: string | null;
   topic: string | null;
+  guideline: string | null;
   source_org: string | null;
   source_url: string | null;
   score: number | null;
