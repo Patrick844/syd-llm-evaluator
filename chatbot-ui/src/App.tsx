@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ask, ApiError } from "./api";
 import type { ChatMessage } from "./types";
 import Message from "./components/Message";
+import { track } from "./analytics";
 
 const EXAMPLES = [
   "Do adults need a yearly flu vaccine?",
@@ -48,8 +49,21 @@ export default function App() {
         ...m,
         { role: "assistant", content: res.answer, sources: res.sources, safety: res.safety },
       ]);
+      // Usage signal — metadata only, never the question text (health privacy).
+      // This is the only place SYD's guardrail outcomes are recorded anywhere.
+      const scores = (res.sources ?? []).map((s) => s.score ?? 0);
+      track("syd_question_asked", {
+        turn: history.length / 2 + 1,
+        question_length: q.length,
+        blocked: res.safety?.blocked ?? false,
+        groundedness: res.safety?.groundedness ?? null,
+        medical_safety: res.safety?.medical_safety ?? null,
+        num_sources: res.sources?.length ?? 0,
+        top_score: scores.length ? Math.max(...scores) : 0,
+      });
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Something went wrong.");
+      track("syd_ask_failed", { reason: e instanceof ApiError ? e.message : "unknown" });
     } finally {
       setLoading(false);
     }
